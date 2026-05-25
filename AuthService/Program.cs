@@ -71,8 +71,6 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// ── Caching ────────────────────────────────────────────────────────────────
-builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
