@@ -1,6 +1,8 @@
 ﻿using AuthService.Data;
+using AuthService.DTOs;
 using AuthService.Models;
 using AuthService.Repositories.Interfaces;
+using ManuTrack.SharedKernel.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthService.Repositories;
@@ -44,4 +46,6 @@ public class AuthRepository : IAuthRepository
 
     public async Task<bool> EmailExistsExceptUserAsync(string email, int userId) =>
         await _db.Users.AnyAsync(u => u.Email == email && u.UserID != userId);
+
+    
 }

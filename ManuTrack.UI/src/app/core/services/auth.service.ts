@@ -60,4 +60,8 @@ export class AuthService {
   getName(): string | null {
     return localStorage.getItem('name');
   }
+
+  getOperators(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/users/by-role?role=Operator`);
+  }
 }

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -42,6 +42,8 @@ export class PlannerComponent implements OnInit {
   defects: DefectViewModel[] = [];
   qualityLoading = false;
   unreadCount = 0;
+  operatorsList: { name: string; email: string; role: string }[] = [];
+  operatorsLoading = false;
   analytics: DashboardSummaryViewModel | null = null;
   kpiReports: KpiReportViewModel[] = [];
 
@@ -163,6 +165,7 @@ export class PlannerComponent implements OnInit {
     this.loadAnalytics();
     this.loadNotifications();
     this.loadQuality();
+    this.loadOperators();
   }
 
   get sectionTitle(): string {
@@ -384,9 +387,10 @@ export class PlannerComponent implements OnInit {
 
   get inProgressCount() { return this.workOrders.filter(w => w.status === 'InProgress').length; }
   get overdueCount()    { return this.workOrders.filter(w => w.isOverdue).length; }
-  get operators()       { return []; } // planner assigns by name
+  get operators() { return this.operatorsList; } // planner assigns by name
 
-  loadWorkOrders(): void {
+  loadWorkOrders(): void
+  {
     this.workOrdersLoading = true;
     this.workOrderSvc.getAll()
       .pipe(timeout(10000), finalize(() => { this.workOrdersLoading = false; this.cdr.detectChanges(); }))
@@ -399,6 +403,17 @@ export class PlannerComponent implements OnInit {
         },
         error: () => { this.workOrdersError = 'Failed to load work orders.'; }
       });
+  }
+  loadOperators(): void {
+    this.operatorsLoading = true;
+    this.auth.getOperators().subscribe({
+      next: (res: any) => {
+        this.operatorsList = res?.data ?? [];
+        this.operatorsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => { this.operatorsLoading = false; }
+    });
   }
 
   createWorkOrder(): void {

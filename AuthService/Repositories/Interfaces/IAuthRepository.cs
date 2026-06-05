@@ -1,4 +1,6 @@
-﻿using AuthService.Models;
+﻿using AuthService.DTOs;
+using AuthService.Models;
+using ManuTrack.SharedKernel.Responses;
 
 namespace AuthService.Repositories.Interfaces;
 

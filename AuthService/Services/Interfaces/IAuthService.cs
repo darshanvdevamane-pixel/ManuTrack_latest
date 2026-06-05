@@ -17,4 +17,5 @@ public interface IAuthService
     Task<ApiResponse>                      DeactivateUserAsync(int userId);
     Task<ApiResponse>                      ActivateUserAsync(int userId);
     Task<ApiResponse<AuthUserViewModel>>   UpdateUserAsync(int userId, UpdateUserRequest request);
+    Task<ApiResponse<List<AuthUserViewModel>>> GetByRoleAsync(string role);
 }

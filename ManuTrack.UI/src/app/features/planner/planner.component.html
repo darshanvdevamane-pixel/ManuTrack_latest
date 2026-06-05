@@ -176,9 +176,16 @@
         <div class="form-field"><label>Description</label>
           <input class="form-input" formControlName="description" placeholder="e.g. Cut steel tubes to size">
           <span class="field-err" *ngIf="tf['description'].invalid && tf['description'].touched">Min 5 chars.</span></div>
-        <div class="form-field"><label>Assign To</label>
-          <input class="form-input" formControlName="assignedTo" placeholder="e.g. Arjun Kumar (Operator)">
-          <span class="field-err" *ngIf="tf['assignedTo'].invalid && tf['assignedTo'].touched">Required.</span></div>
+        <div class="form-field">
+          <label>Assign To</label>
+          <select class="form-input" formControlName="assignedTo">
+            <option value="">-- Select Operator --</option>
+            <option *ngFor="let op of operatorsList" [value]="op.name">{{ op.name }}</option>
+          </select>
+          <div *ngIf="operatorsLoading" style="font-size:11px;color:var(--muted);margin-top:4px">Loading operators…</div>
+          <div *ngIf="!operatorsLoading && operatorsList.length === 0" style="font-size:11px;color:var(--amber);margin-top:4px">No operators found. Ask Admin to register operators.</div>
+          <span class="field-err" *ngIf="tf['assignedTo'].invalid && tf['assignedTo'].touched">Required.</span>
+        </div>
         <div class="form-field"><label>Notes <span style="color:var(--muted2);font-weight:400">(optional)</span></label>
           <input class="form-input" formControlName="notes" placeholder="Any notes…"></div>
       </div></div>
