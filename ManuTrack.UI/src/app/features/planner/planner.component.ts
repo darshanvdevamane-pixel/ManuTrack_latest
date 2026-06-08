@@ -315,7 +315,7 @@ export class PlannerComponent implements OnInit {
 
   get activeComponents() { return this.components.filter(c => c.isActive); }
 
-  /** Only components that are currently InStock or LowStock in Inventory (quantityOnHand > 0) */
+  /** Active components in stock, excluding ones already added to the current product's BOM */
   get componentsInInventory() {
     const inStockComponentIds = new Set(
       this.inventoryItems
@@ -327,7 +327,9 @@ export class PlannerComponent implements OnInit {
         )
         .map(i => i.componentID!)
     );
-    return this.activeComponents.filter(c => inStockComponentIds.has(c.componentID));
+    const productId = +this.bomForm.get('productID')?.value;
+    const alreadyAdded = new Set((this.bomByProduct[productId] ?? []).map(b => b.componentID));
+    return this.activeComponents.filter(c => inStockComponentIds.has(c.componentID) && !alreadyAdded.has(c.componentID));
   }
 
   loadComponents(): void {

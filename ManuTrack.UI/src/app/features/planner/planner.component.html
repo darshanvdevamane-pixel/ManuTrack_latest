@@ -73,7 +73,7 @@
             <select class="form-input" formControlName="componentID">
               <option value="">Select material…</option>
               <option *ngFor="let c of componentsInInventory" [value]="c.componentID">{{ c.name }} ({{ c.unit }}) — {{ c.materialType }}</option>
-              <option *ngIf="componentsInInventory.length === 0" disabled>No materials currently in stock</option>
+              <option *ngIf="componentsInInventory.length === 0" disabled>All available materials already added to BOM</option>
             </select>
             <span class="field-err" *ngIf="bf['componentID'].invalid && bf['componentID'].touched">Required.</span>
             <span style="font-size:11px;color:var(--muted);margin-top:3px;display:block">
