@@ -107,6 +107,9 @@ export class AdminComponent implements OnInit {
   productsLoading = false;
   bomLoading = false;
   auditLoading = false;
+  auditCurrentPage = 1;
+  auditPageSize = 10;
+  auditTotalPages = 1;
   workOrdersLoading = false;
   inventoryLoading = false;
   notificationsLoading = false;
@@ -658,12 +661,13 @@ export class AdminComponent implements OnInit {
   // --- AUDIT ---
   loadAudit(action?: string): void {
     this.auditLoading = true;
-    this.auditSvc.getAll(1, 20, action)
+    this.auditSvc.getAll(this.auditCurrentPage, this.auditPageSize, action)
       .pipe(timeout(10000), finalize(() => { this.auditLoading = false; this.cdr.detectChanges(); }))
       .subscribe({
         next: res => {
           this.auditLogs = res?.data?.data ?? [];
           this.auditTotalRecords = res?.data?.pagination?.totalRecords ?? 0;
+          this.auditTotalPages = Math.ceil(this.auditTotalRecords / this.auditPageSize) || 1;
           this.cdr.detectChanges();
         },
         error: err => {
@@ -676,7 +680,23 @@ export class AdminComponent implements OnInit {
 
   onAuditFilterChange(event: Event): void {
     const val = (event.target as HTMLSelectElement).value;
+    this.auditActionFilter = val;
+    this.auditCurrentPage = 1;
     this.loadAudit(val || undefined);
+  }
+
+  auditGoToPage(page: number): void {
+    if (page < 1 || page > this.auditTotalPages) return;
+    this.auditCurrentPage = page;
+    this.loadAudit(this.auditActionFilter || undefined);
+  }
+
+  auditPageNumbers(): number[] {
+    const pages: number[] = [];
+    const start = Math.max(1, this.auditCurrentPage - 2);
+    const end = Math.min(this.auditTotalPages, start + 4);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   // --- UTILS ---

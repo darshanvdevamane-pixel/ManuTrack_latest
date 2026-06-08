@@ -1208,3 +1208,16 @@ input, select, textarea { font-family: var(--font); }
 .an-metric-key   { font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
 .an-report-by    { font-size:11px; color:var(--muted); margin-top:4px; }
 .an-report-empty { padding:32px; text-align:center; color:var(--muted); font-size:13px; font-style:italic; }
+
+/* ── Pagination ─────────────────────────────────────────────────────────── */
+.pg-btn {
+  min-width: 36px; height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface); color: var(--text2);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.pg-btn:hover:not(:disabled) { background: var(--accent-light); border-color: var(--primary); color: var(--primary); }
+.pg-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+.pg-btn.pg-active { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 700; }
