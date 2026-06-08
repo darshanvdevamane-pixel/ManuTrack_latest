@@ -482,9 +482,12 @@ export class PlannerComponent implements OnInit {
       message,
       category: 'Inventory',
       priority: 'High'
-    }).subscribe({
-      next: () => { this.stockNotifyLoading = false; this.stockNotifySent = true; },
-      error: () => { this.stockNotifyLoading = false; this.showToast('Failed to send notification.', 'error'); }
+    }).pipe(
+      timeout(8000),
+      finalize(() => { this.stockNotifyLoading = false; this.cdr.detectChanges(); })
+    ).subscribe({
+      next: () => { this.stockNotifySent = true; },
+      error: () => { this.showToast('Failed to send notification. Check NotificationService is running.', 'error'); }
     });
   }
 
