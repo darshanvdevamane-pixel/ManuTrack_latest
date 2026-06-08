@@ -468,41 +468,6 @@
   </div>
 </div>
 
-<!-- BROADCAST NOTIFICATION MODAL -->
-<div class="modal-overlay" *ngIf="showBroadcastModal" (click)="showBroadcastModal=false">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <div class="modal-head">
-      <div><div class="modal-title">Broadcast Notification</div><div class="modal-subtitle">Send message to all {{ activeUsers }} active users</div></div>
-      <button class="modal-close" (click)="showBroadcastModal=false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <form [formGroup]="broadcastForm" (ngSubmit)="broadcastNotification()">
-      <div class="modal-body">
-        <div class="form-grid" style="grid-template-columns:1fr">
-          <div class="form-field">
-            <label>Title</label>
-            <input class="form-input" formControlName="title" type="text" placeholder="e.g. System Maintenance Notice">
-            <span class="field-err" *ngIf="brf['title'].invalid && brf['title'].touched">Title required (min 2 chars).</span>
-          </div>
-          <div class="form-field">
-            <label>Category</label>
-            <select class="form-input" formControlName="category">
-              <option *ngFor="let c of notificationCategories" [value]="c.value">{{ c.label }}</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>Message</label>
-            <textarea class="form-input" formControlName="message" rows="3" placeholder="Write your message here…" style="resize:vertical"></textarea>
-            <span class="field-err" *ngIf="brf['message'].invalid && brf['message'].touched">Message required (min 5 chars).</span>
-          </div>
-        </div>
-      </div>
-      <div class="modal-foot">
-        <button type="button" class="t-btn" (click)="showBroadcastModal=false">Cancel</button>
-        <button type="submit" class="t-btn t-btn-primary" [disabled]="broadcastLoading || activeUsers===0">{{ broadcastLoading ? 'Sending…' : '📢 Send to All Users' }}</button>
-      </div>
-    </form>
-  </div>
-</div>
 
 <!-- REGISTER COMPONENT/MATERIAL MODAL -->
 <div class="modal-overlay" *ngIf="showComponentModal" (click)="showComponentModal=false">
@@ -1848,13 +1813,11 @@
         <div class="page-header">
           <div class="page-intro">
             <div class="page-title">Notifications</div>
-            <div class="page-sub">Broadcast messages to users and manage system notifications</div>
+            <div class="page-sub">System notifications</div>
           </div>
-          <button class="t-btn t-btn-primary" (click)="showBroadcastModal=true; broadcastForm.reset({category:'General',sendToAll:true})">📢 Broadcast</button>
         </div>
-        <div class="summary-strip" style="grid-template-columns:repeat(2,1fr)">
-          <div class="sum-card"><div class="sum-accent" style="background:var(--accent)"></div><div class="sum-label">Total Sent</div><div class="sum-val">{{ notifications.length }}</div></div>
-          <div class="sum-card"><div class="sum-accent" style="background:var(--amber)"></div><div class="sum-label">Active Users</div><div class="sum-val">{{ activeUsers }}</div><div class="sum-desc">Will receive broadcast</div></div>
+        <div class="summary-strip" style="grid-template-columns:repeat(1,1fr)">
+          <div class="sum-card"><div class="sum-accent" style="background:var(--accent)"></div><div class="sum-label">Total</div><div class="sum-val">{{ notifications.length }}</div></div>
         </div>
         <div class="card">
           <div class="card-head">
