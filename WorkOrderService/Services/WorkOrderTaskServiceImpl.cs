@@ -125,8 +125,9 @@ public class WorkOrderTaskServiceImpl(
                     await workOrderRepo.UpdateAsync(order);
                     await LogAuditAsync("Auto-Completed WorkOrder", "WorkOrder",
                         task.WorkOrderID.ToString(), "All tasks completed — Work Order auto-marked as Completed.");
-                    _ = NotifyWorkOrderCompletedAsync(task.WorkOrderID);
-                    _ = DeductBomStockAsync(order.ProductID, order.Quantity, order.WorkOrderID);
+                    var token = ServiceHelper.GetBearerToken(httpContextAccessor);
+                    _ = NotifyWorkOrderCompletedAsync(task.WorkOrderID, token);
+                    _ = DeductBomStockAsync(order.ProductID, order.Quantity, order.WorkOrderID, token);
                 }
                 else if (order.Status == WorkOrderStatus.Pending)
                 {
@@ -142,11 +143,13 @@ public class WorkOrderTaskServiceImpl(
         return ApiResponse<WorkOrderTaskViewModel>.Ok(Map(updated), "Task status updated.");
     }
 
-    private async Task DeductBomStockAsync(int productId, decimal woQuantity, int workOrderId)
+    private async Task DeductBomStockAsync(int productId, decimal woQuantity, int workOrderId, string? token)
     {
         try
         {
-            var productClient = ServiceHelper.CreateAuthorizedClient(httpClientFactory, httpContextAccessor, "ProductService");
+            var productClient = httpClientFactory.CreateClient("ProductService");
+            if (token != null) productClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
             var bomResponse = await productClient.GetAsync($"api/v1/bom?productId={productId}");
             if (!bomResponse.IsSuccessStatusCode) return;
 
@@ -157,7 +160,8 @@ public class WorkOrderTaskServiceImpl(
             var bomEntries = bomResult?.Data;
             if (bomEntries == null) return;
 
-            var invClient = ServiceHelper.CreateAuthorizedClient(httpClientFactory, httpContextAccessor, "InventoryService");
+            var invClient = httpClientFactory.CreateClient("InventoryService");
+            if (token != null) invClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var invResponse = await invClient.GetAsync("api/v1/inventory");
             if (!invResponse.IsSuccessStatusCode) return;
 
@@ -194,13 +198,14 @@ public class WorkOrderTaskServiceImpl(
     private sealed class InventoryListResponseDto { public IEnumerable<InventoryItemDto>? Data { get; set; } }
     private sealed class InventoryItemDto { public int InventoryID { get; set; } public int? ComponentID { get; set; } }
 
-    private async Task NotifyWorkOrderCompletedAsync(int workOrderId)
+    private async Task NotifyWorkOrderCompletedAsync(int workOrderId, string? token)
     {
         try
         {
             var (userId, _) = ServiceHelper.GetCurrentUser(httpContextAccessor);
             if (userId == 0) return;
-            var client = ServiceHelper.CreateAuthorizedClient(httpClientFactory, httpContextAccessor, "NotificationService");
+            var client = httpClientFactory.CreateClient("NotificationService");
+            if (token != null) client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             await client.PostAsJsonAsync("api/v1/notifications", new
             {
                 UserID = userId,
